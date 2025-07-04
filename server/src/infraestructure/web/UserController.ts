@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { createUser } from "../../usecases/user/createUser";
 import { updateUser } from "../../usecases/user/updateUser";
+import { deleteUser } from "../../usecases/user/deleteUser";
 import { UserRepository } from "../../domain/repositories/UserRepository";
 
 export const makeUserRoutes = (repo: UserRepository): Router => {
@@ -22,6 +23,11 @@ export const makeUserRoutes = (repo: UserRepository): Router => {
     } catch (e: any) {
       res.status(400).json({ error: e.message });
     }
+  });
+
+  router.delete("/:id", async (req: Request, res: Response) => {
+    await deleteUser(repo, Number(req.params.id));
+    res.status(204).send();
   });
 
   return router;

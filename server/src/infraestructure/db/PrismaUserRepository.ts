@@ -18,4 +18,9 @@ export const createPrismaUserRepository = (
     const updated = await prisma.user.update({ where: { id }, data: user });
     return { id: updated.id, name: updated.name, email: updated.email };
   },
+
+  delete: async (id) => {
+    await prisma.user.delete({ where: { id } });
+  },
+
 });

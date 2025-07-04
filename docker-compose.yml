@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: curotec_fullstack_pg
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: curotec
+      POSTGRES_PASSWORD: curotecpass
+      POSTGRES_DB: curotecdb
+    volumes:
+      - curotecpgdata:/var/lib/postgresql/data
+
+volumes:
+  curotecpgdata:

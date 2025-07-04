@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { UserRepository } from "../../domain/repositories/UserRepository";
+import { User } from "../../domain/entities/User";
 
 export const createPrismaUserRepository = (
   prisma: PrismaClient
@@ -23,4 +24,13 @@ export const createPrismaUserRepository = (
     await prisma.user.delete({ where: { id } });
   },
 
+  findById: async (id) => {
+    const user = await prisma.user.findUnique({ where: { id } });
+    return user ? { id: user.id, name: user.name, email: user.email } : null;
+  },
+
+  findAll: async () => {
+    const users = await prisma.user.findMany();
+    return users.map((u: User) => ({ id: u.id, name: u.name, email: u.email }));
+  },
 });

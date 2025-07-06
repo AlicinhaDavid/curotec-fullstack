@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import { createPrismaUserRepository } from "../infraestructure/db/PrismaUserRepository";
-import { makeUserRoutes } from "../infraestructure/web/UserController";
+import { makeUserRoutes } from "../infraestructure/web/routes/UserController";
 
 export const createServer = () => {
   const app = express();

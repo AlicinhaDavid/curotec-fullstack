@@ -61,36 +61,45 @@ export default function EditUser() {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Edit User</h1>
+    <div className="container">
+      <div style={{ padding: "2rem" }}>
+        <h1>Edit User</h1>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleFind(getId(e));
-        }}
-      >
-        <input {...register("id")} placeholder="User ID" name="id" required />
-        <button type="submit">Find</button>
-      </form>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleFind(getId(e));
+          }}
+        >
+          <div className="inline-id-group">
+            <input
+              {...register("id")}
+              placeholder="User ID"
+              name="id"
+              required
+            />
+            <button type="submit">Find</button>
+          </div>
+        </form>
 
-      <form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: "1rem" }}>
-        <input {...register("name")} placeholder="Name" required />
-        <input
-          {...register("email")}
-          type="email"
-          placeholder="Email"
-          required
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? "Updating..." : "Update"}
-        </button>
-      </form>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: "1rem" }}>
+          <input {...register("name")} placeholder="Name" required />
+          <input
+            {...register("email")}
+            type="email"
+            placeholder="Email"
+            required
+          />
+          <button type="submit" disabled={loading}>
+            {loading ? "Updating..." : "Update"}
+          </button>
+        </form>
 
-      {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
-      {successMessage && (
-        <p style={{ marginTop: "1rem", color: "green" }}>{successMessage}</p>
-      )}
+        {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
+        {successMessage && (
+          <p style={{ marginTop: "1rem", color: "green" }}>{successMessage}</p>
+        )}
+      </div>
     </div>
   );
 }

@@ -35,29 +35,33 @@ export default function FindUser() {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Find User by ID</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <input {...register("id")} placeholder="User ID" required />
-        <button type="submit" disabled={loading}>
-          {loading ? "Searching..." : "Find"}
-        </button>
-      </form>
+    <div className="container">
+      <div style={{ padding: "2rem" }}>
+        <h1>Find User by ID</h1>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="inline-id-group">
+            <input {...register("id")} placeholder="User ID" required />
+            <button type="submit" disabled={loading}>
+              {loading ? "Searching..." : "Find"}
+            </button>
+          </div>
+        </form>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {successMessage && (
-        <p style={{ marginTop: "1rem", color: "green" }}>{successMessage}</p>
-      )}
-      {user && (
-        <div style={{ marginTop: "1rem" }}>
-          <p>
-            <strong>Name:</strong> {user.name}
-          </p>
-          <p>
-            <strong>Email:</strong> {user.email}
-          </p>
-        </div>
-      )}
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        {successMessage && (
+          <p style={{ marginTop: "1rem", color: "green" }}>{successMessage}</p>
+        )}
+        {user && (
+          <div style={{ marginTop: "1rem" }}>
+            <p>
+              <strong>Name:</strong> {user.name}
+            </p>
+            <p>
+              <strong>Email:</strong> {user.email}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

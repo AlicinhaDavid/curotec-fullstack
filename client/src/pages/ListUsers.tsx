@@ -27,19 +27,21 @@ export default function ListUsers() {
   }, []);
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>All Users</h1>
-      {loading && <p>Loading...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {users.length > 0 && (
-        <ul>
-          {users.map((user) => (
-            <li key={user.id}>
-              {user.name} — {user.email}
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="container">
+      <div style={{ padding: "2rem" }}>
+        <h1>All Users</h1>
+        {loading && <p>Loading...</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        {users.length > 0 && (
+          <ul>
+            {users.map((user) => (
+              <li key={user.id}>
+                {user.name} — {user.email}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

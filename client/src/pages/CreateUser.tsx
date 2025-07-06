@@ -34,27 +34,29 @@ export default function CreateUser() {
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "400px" }}>
-      <h1>Create User</h1>
+    <div className="container">
+      <div style={{ padding: "2rem", maxWidth: "400px" }}>
+        <h1>Create User</h1>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div style={{ marginBottom: "1rem" }}>
-          <label>Name: </label>
-          <input {...register("name")} required />
-        </div>
-        <div style={{ marginBottom: "1rem" }}>
-          <label>Email: </label>
-          <input {...register("email")} type="email" required />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Submitting..." : "Submit"}
-        </button>
-      </form>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div style={{ marginBottom: "1rem" }}>
+            <label>Name: </label>
+            <input {...register("name")} required />
+          </div>
+          <div style={{ marginBottom: "1rem" }}>
+            <label>Email: </label>
+            <input {...register("email")} type="email" required />
+          </div>
+          <button type="submit" disabled={loading}>
+            {loading ? "Submitting..." : "Submit"}
+          </button>
+        </form>
 
-      {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
-      {successMessage && (
-        <p style={{ color: "green", marginTop: "1rem" }}>{successMessage}</p>
-      )}
+        {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
+        {successMessage && (
+          <p style={{ color: "green", marginTop: "1rem" }}>{successMessage}</p>
+        )}
+      </div>
     </div>
   );
 }

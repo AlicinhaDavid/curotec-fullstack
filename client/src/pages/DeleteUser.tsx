@@ -62,50 +62,54 @@ export default function DeleteUser() {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Delete User</h1>
+    <div className="container">
+      <div style={{ padding: "2rem" }}>
+        <h1>Delete User</h1>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleFind(getId(e));
-        }}
-      >
-        <input
-          {...idFormData.register("id")}
-          placeholder="User ID"
-          name="id"
-          required
-        />
-        <button type="submit">Find</button>
-      </form>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleFind(getId(e));
+          }}
+        >
+          <div className="inline-id-group">
+            <input
+              {...idFormData.register("id")}
+              placeholder="User ID"
+              name="id"
+              required
+            />
+            <button type="submit">Find</button>
+          </div>
+        </form>
 
-      <form
-        onSubmit={idFormData.handleSubmit(onDelete)}
-        style={{ marginTop: "1rem" }}
-      >
-        <input
-          {...userFormData.register("name")}
-          placeholder="Name"
-          required
-          readOnly
-        />
-        <input
-          {...userFormData.register("email")}
-          type="email"
-          placeholder="Email"
-          required
-          readOnly
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? "Deleting..." : "Delete"}
-        </button>
-      </form>
+        <form
+          onSubmit={idFormData.handleSubmit(onDelete)}
+          style={{ marginTop: "1rem" }}
+        >
+          <input
+            {...userFormData.register("name")}
+            placeholder="Name"
+            required
+            readOnly
+          />
+          <input
+            {...userFormData.register("email")}
+            type="email"
+            placeholder="Email"
+            required
+            readOnly
+          />
+          <button type="submit" disabled={loading}>
+            {loading ? "Deleting..." : "Delete"}
+          </button>
+        </form>
 
-      {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
-      {successMessage && (
-        <p style={{ marginTop: "1rem", color: "green" }}>{successMessage}</p>
-      )}
+        {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
+        {successMessage && (
+          <p style={{ marginTop: "1rem", color: "green" }}>{successMessage}</p>
+        )}
+      </div>
     </div>
   );
 }

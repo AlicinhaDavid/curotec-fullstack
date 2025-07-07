@@ -11,7 +11,7 @@ export function validate(
     if (!result.success) {
       return res.status(400).json({ errors: result.error.flatten() });
     }
-    req.body = result.data;
+    req[target] = result.data;
     next();
   };
 }

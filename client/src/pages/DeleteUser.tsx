@@ -1,8 +1,19 @@
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useState } from "react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-type IdFormData = { id: string };
+const idSchema = z.object({
+  id: z
+    .string()
+    .regex(/^\d+$/, "ID must be a number")
+    .transform((val) => Number(val))
+    .refine((val) => val > 0, { message: "ID must be greater than 0" })
+    .transform((val) => String(val)),
+});
+
+type IdFormData = z.infer<typeof idSchema>;
 
 type UserFormData = {
   name: string;
@@ -10,18 +21,15 @@ type UserFormData = {
 };
 
 export default function DeleteUser() {
-  const idFormData = useForm<IdFormData>();
+  const idFormData = useForm<IdFormData>({
+    resolver: zodResolver(idSchema),
+  });
   const userFormData = useForm<UserFormData>();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const getId = (e: React.FormEvent<HTMLFormElement>) => {
-    return (
-      e.currentTarget.querySelector("input[name='id']") as HTMLInputElement
-    ).value;
-  };
   const handleFind = async (id: string) => {
     setLoading(true);
     setError(null);
@@ -67,19 +75,22 @@ export default function DeleteUser() {
         <h1>Delete User</h1>
 
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleFind(getId(e));
-          }}
+          onSubmit={idFormData.handleSubmit((data) =>
+            handleFind(data.id.toString())
+          )}
         >
           <div className="inline-id-group">
             <input
               {...idFormData.register("id")}
               placeholder="User ID"
               name="id"
-              required
             />
             <button type="submit">Find</button>
+            {idFormData.formState.errors.id && (
+              <p style={{ color: "red" }}>
+                {idFormData.formState.errors.id.message}
+              </p>
+            )}
           </div>
         </form>
 
@@ -90,14 +101,11 @@ export default function DeleteUser() {
           <input
             {...userFormData.register("name")}
             placeholder="Name"
-            required
             readOnly
           />
           <input
             {...userFormData.register("email")}
-            type="email"
             placeholder="Email"
-            required
             readOnly
           />
           <button type="submit" disabled={loading}>

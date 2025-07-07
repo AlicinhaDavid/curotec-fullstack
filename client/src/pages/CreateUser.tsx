@@ -1,14 +1,26 @@
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useState } from "react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-type UserFormData = {
-  name: string;
-  email: string;
-};
+const userSchema = z.object({
+  name: z.string().min(1, "* Name is required."),
+  email: z.string().email("* Invalid email address."),
+});
+
+type UserFormData = z.infer<typeof userSchema>;
 
 export default function CreateUser() {
-  const { register, handleSubmit, reset } = useForm<UserFormData>();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<UserFormData>({
+    resolver: zodResolver(userSchema),
+  });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -41,11 +53,17 @@ export default function CreateUser() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div style={{ marginBottom: "1rem" }}>
             <label>Name: </label>
-            <input {...register("name")} required />
+            <input {...register("name")} placeholder="Name" />
+            {errors.name && (
+              <p style={{ color: "red" }}>{errors.name.message}</p>
+            )}
           </div>
           <div style={{ marginBottom: "1rem" }}>
             <label>Email: </label>
-            <input {...register("email")} type="email" required />
+            <input {...register("email")} placeholder="Email" />
+            {errors.email && (
+              <p style={{ color: "red" }}>{errors.email.message}</p>
+            )}
           </div>
           <button type="submit" disabled={loading}>
             {loading ? "Submitting..." : "Submit"}

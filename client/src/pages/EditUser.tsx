@@ -1,24 +1,44 @@
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useState } from "react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-type UserFormData = {
-  id: string;
-  name: string;
-  email: string;
-};
+const idSchema = z.object({
+  id: z
+    .string()
+    .regex(/^\d+$/, "ID must be a number.")
+    .transform((val) => Number(val))
+    .refine((val) => val > 0, { message: "ID must be greater than 0." })
+    .transform((val) => String(val)),
+});
+
+type IdFormData = z.infer<typeof idSchema>;
+
+const userSchema = z.object({
+  id: z
+    .string()
+    .regex(/^\d+$/, "ID must be a number")
+    .transform((val) => Number(val))
+    .refine((val) => val > 0, { message: "ID must be greater than 0." })
+    .transform((val) => String(val)),
+  name: z.string().min(1, "* Name is required."),
+  email: z.string().email("* Invalid email address."),
+});
+
+type UserFormData = z.infer<typeof userSchema>;
 
 export default function EditUser() {
-  const { register, handleSubmit, setValue } = useForm<UserFormData>();
+  const idFormData = useForm<IdFormData>({
+    resolver: zodResolver(idSchema),
+  });
+  const userFormData = useForm<UserFormData>({
+    resolver: zodResolver(userSchema),
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const getId = (e: React.FormEvent<HTMLFormElement>) => {
-    return (
-      e.currentTarget.querySelector("input[name='id']") as HTMLInputElement
-    ).value;
-  };
   const handleFind = async (id: string) => {
     setLoading(true);
     setError(null);
@@ -26,8 +46,9 @@ export default function EditUser() {
 
     try {
       const res = await axios.get(`http://localhost:3000/users/${id}`);
-      setValue("name", res.data.name);
-      setValue("email", res.data.email);
+      userFormData.setValue("id", String(res.data.id));
+      userFormData.setValue("name", res.data.name);
+      userFormData.setValue("email", res.data.email);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         setError(err?.response?.data?.message || "API error.");
@@ -39,7 +60,8 @@ export default function EditUser() {
     }
   };
 
-  const onSubmit = async (data: UserFormData) => {
+  const onUpdate = async (data: UserFormData) => {
+    console.log("onUpdate", data);
     setLoading(true);
     setError(null);
     setSuccessMessage(null);
@@ -51,6 +73,8 @@ export default function EditUser() {
       setSuccessMessage("User updated successfully.");
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
+        console.log("err.message", err.message);
+
         setError(err?.response?.data?.message || "API error.");
       } else {
         setError("Unexpected error");
@@ -66,30 +90,46 @@ export default function EditUser() {
         <h1>Edit User</h1>
 
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleFind(getId(e));
-          }}
+          onSubmit={idFormData.handleSubmit((data) =>
+            handleFind(data.id.toString())
+          )}
         >
           <div className="inline-id-group">
             <input
-              {...register("id")}
+              {...idFormData.register("id")}
               placeholder="User ID"
               name="id"
-              required
             />
             <button type="submit">Find</button>
+            {idFormData.formState.errors.id && (
+              <p style={{ color: "red" }}>
+                {idFormData.formState.errors.id.message}
+              </p>
+            )}
           </div>
         </form>
 
-        <form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: "1rem" }}>
-          <input {...register("name")} placeholder="Name" required />
+        <form
+          onSubmit={userFormData.handleSubmit(onUpdate)}
+          style={{ marginTop: "1rem" }}
+        >
+          <input type="hidden" {...userFormData.register("id")} />
+          <input {...userFormData.register("name")} placeholder="Name" />
+          {userFormData.formState.errors.name && (
+            <p style={{ color: "red" }}>
+              {userFormData.formState.errors.name.message}
+            </p>
+          )}
           <input
-            {...register("email")}
+            {...userFormData.register("email")}
             type="email"
             placeholder="Email"
-            required
           />
+          {userFormData.formState.errors.email && (
+            <p style={{ color: "red" }}>
+              {userFormData.formState.errors.email.message}
+            </p>
+          )}
           <button type="submit" disabled={loading}>
             {loading ? "Updating..." : "Update"}
           </button>

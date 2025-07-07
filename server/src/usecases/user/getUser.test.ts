@@ -1,36 +1,9 @@
-import { getUserById, getAllUsers } from "./getUser";
+import { getUserById, getAllUsers, getUsersWhichContains } from "./getUser";
 import { createUser } from "./createUser";
-import { UserRepository } from "../../domain/repositories/UserRepository";
 import { User } from "../../domain/entities/User";
+import { createInMemoryUserRepo } from "./test-utils/createInMemoryUserRepo";
 
 describe("getUser", () => {
-  const createInMemoryUserRepo = (): UserRepository => {
-    let id = 1;
-    let data: User[] = [];
-
-    return {
-      findAll: async () => data,
-      findById: async (id) => data.find((user) => user.id === id) || null,
-      findByEmail: async (email) =>
-        data.find((user) => user.email === email) || null,
-      save: async (user) => {
-        const newUser = { ...user, id: id++ };
-        data.push(newUser);
-        return newUser;
-      },
-      update: async (id, user) => {
-        const index = data.findIndex((user) => user.id === id);
-        if (index === -1) throw new Error("Not found");
-        const updated = { ...user, id };
-        data[index] = updated;
-        return updated;
-      },
-      delete: async (id) => {
-        data = data.filter((user) => user.id !== id);
-      },
-    };
-  };
-
   it("should retrieve a user by ID", async () => {
     const repo = createInMemoryUserRepo();
     const created = await createUser(repo, {
@@ -53,5 +26,53 @@ describe("getUser", () => {
     await createUser(repo, { name: "User2", email: "u2@mail.com" });
     const users = await getAllUsers(repo);
     expect(users).toHaveLength(2);
+  });
+
+  describe("getUsersWhichContains", () => {
+    it("should return users whose names contain the search term, paginated", async () => {
+      const repo = createInMemoryUserRepo();
+
+      await createUser(repo, {
+        name: "Alice Johnson",
+        email: "alice@mail.com",
+      });
+      await createUser(repo, { name: "Bob Smith", email: "bob@mail.com" });
+      await createUser(repo, { name: "Carol Alice", email: "carol@mail.com" });
+      await createUser(repo, { name: "David", email: "david@mail.com" });
+
+      const page = 1;
+      const limit = 2;
+
+      const result = await getUsersWhichContains(repo, "Alice", page, limit);
+
+      expect(result.data).toHaveLength(2);
+      expect(result.data.map((user: User) => user.name)).toEqual(
+        expect.arrayContaining(["Alice Johnson", "Carol Alice"])
+      );
+    });
+
+    it("should return an empty array if no user matches the search", async () => {
+      const repo = createInMemoryUserRepo();
+
+      await createUser(repo, { name: "Eve", email: "eve@mail.com" });
+
+      const result = await getUsersWhichContains(repo, "Nonexistent", 1, 10);
+
+      expect(result.data).toEqual([]);
+    });
+
+    it("should paginate the result correctly", async () => {
+      const repo = createInMemoryUserRepo();
+
+      await createUser(repo, { name: "Ana", email: "ana@mail.com" });
+      await createUser(repo, { name: "Anabelle", email: "anabelle@mail.com" });
+      await createUser(repo, { name: "Anderson", email: "anderson@mail.com" });
+
+      const page1 = await getUsersWhichContains(repo, "An", 1, 2);
+      const page2 = await getUsersWhichContains(repo, "An", 2, 2);
+
+      expect(page1.data).toHaveLength(2);
+      expect(page2.data).toHaveLength(1);
+    });
   });
 });

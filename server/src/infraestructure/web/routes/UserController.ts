@@ -1,6 +1,10 @@
 import { Router, Request, Response } from "express";
 import { createUser } from "../../../usecases/user/createUser";
-import { getUserById, getAllUsers } from "../../../usecases/user/getUser";
+import {
+  getUserById,
+  getAllUsers,
+  getUsersWhichContains,
+} from "../../../usecases/user/getUser";
 import { updateUser } from "../../../usecases/user/updateUser";
 import { deleteUser } from "../../../usecases/user/deleteUser";
 import { UserRepository } from "../../../domain/repositories/UserRepository";
@@ -46,6 +50,20 @@ export const makeUserRoutes = (repo: UserRepository): Router => {
       res.status(204).send();
     }
   );
+
+  router.get("/filter", async (req: Request, res: Response) => {
+    const { search = "", page = "1", limit = "10" } = req.query;
+
+    const result = await getUsersWhichContains(
+      repo,
+      search.toString(),
+      parseInt(page.toString(), 10),
+      parseInt(limit.toString(), 10)
+    );
+
+    return res.json(result);
+  });
+
   router.get("/", async (req: Request, res: Response) => {
     const users = await getAllUsers(repo);
     res.json(users);

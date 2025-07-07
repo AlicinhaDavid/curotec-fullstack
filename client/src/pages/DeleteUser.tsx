@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import api, { isAxiosError } from "../api";
 
 const idSchema = z.object({
   id: z
@@ -35,11 +35,11 @@ export default function DeleteUser() {
     setError(null);
     setSuccessMessage(null);
     try {
-      const res = await axios.get(`http://localhost:3000/users/${id}`);
+      const res = await api.get(`/users/${id}`);
       userFormData.setValue("name", res.data.name);
       userFormData.setValue("email", res.data.email);
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
+      if (isAxiosError(err)) {
         setError(err?.response?.data?.message || "API error.");
       } else {
         setError("Unexpected error");
@@ -54,12 +54,12 @@ export default function DeleteUser() {
     setError(null);
     setSuccessMessage(null);
     try {
-      await axios.delete(`http://localhost:3000/users/${data.id}`);
+      await api.delete(`/users/${data.id}`);
       setSuccessMessage("User deleted.");
       userFormData.reset();
       idFormData.reset();
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
+      if (isAxiosError(err)) {
         setError(err?.response?.data?.message || "API error.");
       } else {
         setError("Unexpected error");

@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import api, { isAxiosError } from "../api";
 
 const userSchema = z.object({
   name: z.string().min(1, "* Name is required."),
@@ -31,11 +31,11 @@ export default function CreateUser() {
     setSuccessMessage(null);
 
     try {
-      await axios.post("http://localhost:3000/users", data);
+      await api.post("/users", data);
       setSuccessMessage("User created successfully!");
       reset();
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
+      if (isAxiosError(err)) {
         setError(err?.response?.data?.message || "API error.");
       } else {
         setError("Unexpected error");

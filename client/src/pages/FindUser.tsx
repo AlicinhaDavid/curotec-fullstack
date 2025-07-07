@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import api, { isAxiosError } from "../api";
 
 const idSchema = z.object({
   id: z
@@ -36,12 +36,12 @@ export default function FindUser() {
     setSuccessMessage(null);
 
     try {
-      const res = await axios.get(`http://localhost:3000/users/${id}`);
+      const res = await api.get(`/users/${id}`);
 
       setUser(res.data);
       setSuccessMessage("User found successfully.");
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
+      if (isAxiosError(err)) {
         setError(err?.response?.data?.message || "API error.");
       } else {
         setError("Unexpected error");

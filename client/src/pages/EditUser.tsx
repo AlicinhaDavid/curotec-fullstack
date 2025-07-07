@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import api, { isAxiosError } from "../api";
 
 const idSchema = z.object({
   id: z
@@ -45,12 +45,12 @@ export default function EditUser() {
     setSuccessMessage(null);
 
     try {
-      const res = await axios.get(`http://localhost:3000/users/${id}`);
+      const res = await api.get(`/users/${id}`);
       userFormData.setValue("id", String(res.data.id));
       userFormData.setValue("name", res.data.name);
       userFormData.setValue("email", res.data.email);
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
+      if (isAxiosError(err)) {
         setError(err?.response?.data?.message || "API error.");
       } else {
         setError("Unexpected error");
@@ -66,13 +66,13 @@ export default function EditUser() {
     setError(null);
     setSuccessMessage(null);
     try {
-      await axios.put(`http://localhost:3000/users/${data.id}`, {
+      await api.put(`/users/${data.id}`, {
         name: data.name,
         email: data.email,
       });
       setSuccessMessage("User updated successfully.");
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
+      if (isAxiosError(err)) {
         console.log("err.message", err.message);
 
         setError(err?.response?.data?.message || "API error.");

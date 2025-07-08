@@ -1,32 +1,9 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import api, { isAxiosError } from "../api";
-
-const idSchema = z.object({
-  id: z
-    .string()
-    .regex(/^\d+$/, "ID must be a number.")
-    .transform((val) => Number(val))
-    .refine((val) => val > 0, { message: "ID must be greater than 0." })
-    .transform((val) => String(val)),
-});
-
-type IdFormData = z.infer<typeof idSchema>;
-
-const userSchema = z.object({
-  id: z
-    .string()
-    .regex(/^\d+$/, "ID must be a number")
-    .transform((val) => Number(val))
-    .refine((val) => val > 0, { message: "ID must be greater than 0." })
-    .transform((val) => String(val)),
-  name: z.string().min(1, "* Name is required."),
-  email: z.string().email("* Invalid email address."),
-});
-
-type UserFormData = z.infer<typeof userSchema>;
+import { UserFormData, userSchema } from "../schemas/userSchema";
+import { IdFormData, idSchema } from "../schemas/idSchema";
 
 export default function EditUser() {
   const idFormData = useForm<IdFormData>({

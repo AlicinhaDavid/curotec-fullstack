@@ -1,15 +1,11 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import api, { isAxiosError } from "../api";
-
-const userSchema = z.object({
-  name: z.string().min(1, "* Name is required."),
-  email: z.string().email("* Invalid email address."),
-});
-
-type UserFormData = z.infer<typeof userSchema>;
+import {
+  userWithoutIdFormData,
+  userWithoutIdSchema,
+} from "../schemas/userWithoutIdSchema";
 
 export default function CreateUser() {
   const {
@@ -17,15 +13,15 @@ export default function CreateUser() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<UserFormData>({
-    resolver: zodResolver(userSchema),
+  } = useForm<userWithoutIdFormData>({
+    resolver: zodResolver(userWithoutIdSchema),
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const onSubmit = async (data: UserFormData) => {
+  const onSubmit = async (data: userWithoutIdFormData) => {
     setLoading(true);
     setError(null);
     setSuccessMessage(null);

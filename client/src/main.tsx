@@ -10,8 +10,12 @@ import App from "./App";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
+      {" "}
+      {/* Redux Provider caching data */}
       <BrowserRouter>
         <UserFilterProvider>
+          {" "}
+          {/* Context provider for user filters (search, pagination) */}
           <App />
         </UserFilterProvider>
       </BrowserRouter>

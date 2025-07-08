@@ -1,5 +1,16 @@
 import { UserRepository } from "../../../domain/repositories/UserRepository";
 import { User } from "../../../domain/entities/User";
+
+/**
+ * Creates an in-memory implementation of UserRepository for testing purposes.
+ *
+ * This repository stores users in a local array, simulating CRUD operations
+ * without connecting to a real database.
+ *
+ * Useful for unit tests where isolation from external dependencies is needed.
+ *
+ * @returns UserRepository implementation with in-memory storage.
+ */
 export const createInMemoryUserRepo = (): UserRepository => {
   let id = 1;
   let data: User[] = [];

@@ -34,4 +34,5 @@ export const userApi = createApi({
   }),
 });
 
-export const { useGetUsersFilteredQuery } = userApi;
+export const { useGetUsersFilteredQuery, useLazyGetUsersFilteredQuery } =
+  userApi;

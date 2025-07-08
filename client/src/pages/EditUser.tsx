@@ -38,7 +38,6 @@ export default function EditUser() {
   };
 
   const onUpdate = async (data: UserFormData) => {
-    console.log("onUpdate", data);
     setLoading(true);
     setError(null);
     setSuccessMessage(null);

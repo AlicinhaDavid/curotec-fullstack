@@ -8,7 +8,10 @@ RUN npm install --omit=dev && \
     npx prisma generate
 
 COPY dist ./dist
+COPY entrypoint.sh .
+
+RUN chmod +x entrypoint.sh
 
 EXPOSE 3001
 
-CMD ["node", "dist/index.js"]
+CMD ["./entrypoint.sh"]

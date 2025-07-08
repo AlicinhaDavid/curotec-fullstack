@@ -17,7 +17,8 @@ transpile-server:
 	nvm use && \
 	npm install && \
 	npx prisma generate && \
-	npm run build
+	npm run build && \
+	npm run test
 
 transpile-client:
 	cd $(CLIENT_DIR) && \

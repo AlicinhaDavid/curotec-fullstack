@@ -1,8 +1,9 @@
 import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
-import { createPrismaUserRepository } from "../infraestructure/db/PrismaUserRepository";
-import { makeUserRoutes } from "../infraestructure/web/routes/UserController";
+import { createPrismaUserRepository } from "../db/PrismaUserRepository";
+import { makeUserRoutes } from "./routes/UserController";
+import { errorHandler } from "./middlewares/errorHandler";
 
 export const createServer = () => {
   const app = express();
@@ -20,5 +21,6 @@ export const createServer = () => {
   const userRepo = createPrismaUserRepository(prisma);
 
   app.use("/users", makeUserRoutes(userRepo));
+  app.use(errorHandler);
   return app;
 };

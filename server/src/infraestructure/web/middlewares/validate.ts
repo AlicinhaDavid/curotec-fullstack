@@ -1,5 +1,6 @@
 import { ZodTypeAny } from "zod";
 import { Request, Response, NextFunction } from "express";
+import { AppError } from "../errors/AppError";
 
 /**
  * Middleware factory for request validation using Zod schemas.
@@ -7,7 +8,7 @@ import { Request, Response, NextFunction } from "express";
  * Validates the specified part of the request (body, params, or query)
  * against the provided Zod schema.
  *
- * If validation fails, responds with HTTP 400 and validation errors.
+ * If validation fails, throws an AppError with HTTP 400 and validation details.
  * If validation succeeds, replaces the original data with the parsed
  * and validated data (which may be sanitized or transformed by Zod),
  * then calls next middleware/handler.
@@ -24,8 +25,15 @@ export function validate(
     const result = schema.safeParse(req[target]);
 
     if (!result.success) {
-      return res.status(400).json({ errors: result.error.flatten() });
+      const formatted = result.error.flatten();
+      throw new AppError(
+        "Validation error",
+        400,
+        "VALIDATION_ERROR",
+        formatted
+      );
     }
+
     req[target] = result.data;
     next();
   };
